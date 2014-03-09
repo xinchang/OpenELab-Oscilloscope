@@ -1,6 +1,8 @@
 OpenELab-Oscilloscope
 =====================
 
-Product of OpenELab
+Interface of OpenELab
+
+MIT license
 
 Xinchang
