@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4A6BB53218CA71A100D40FF4 /* OELPlotView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BB53118CA71A100D40FF4 /* OELPlotView.m */; };
+		4A6BB53718CA860200D40FF4 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A6BB53618CA860200D40FF4 /* OpenGLES.framework */; };
+		4A6BB53918CA860F00D40FF4 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A6BB53818CA860F00D40FF4 /* QuartzCore.framework */; };
+		4A6BB55118CC604000D40FF4 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A6BB55018CC604000D40FF4 /* GLKit.framework */; };
+		4A6BB55318CC8F1B00D40FF4 /* Vertex.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 4A6BB55218CC8F1B00D40FF4 /* Vertex.glsl */; };
+		4A6BB55618CC919600D40FF4 /* Fragment.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 4A6BB55518CC919600D40FF4 /* Fragment.glsl */; };
+		4AAEBC9D18D6000100E42FDE /* OELPlotData.c in Sources */ = {isa = PBXBuildFile; fileRef = 4AAEBC9C18D6000100E42FDE /* OELPlotData.c */; };
 		4AB7AAFC18C92FC000036040 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AB7AAFB18C92FC000036040 /* Foundation.framework */; };
 		4AB7AAFE18C92FC000036040 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AB7AAFD18C92FC000036040 /* CoreGraphics.framework */; };
 		4AB7AB0018C92FC000036040 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AB7AAFF18C92FC000036040 /* UIKit.framework */; };
@@ -35,6 +42,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4A6BB53018CA71A100D40FF4 /* OELPlotView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OELPlotView.h; path = Plot/OELPlotView.h; sourceTree = "<group>"; };
+		4A6BB53118CA71A100D40FF4 /* OELPlotView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OELPlotView.m; path = Plot/OELPlotView.m; sourceTree = "<group>"; };
+		4A6BB53618CA860200D40FF4 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		4A6BB53818CA860F00D40FF4 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		4A6BB55018CC604000D40FF4 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		4A6BB55218CC8F1B00D40FF4 /* Vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Vertex.glsl; path = GlFiles/Vertex.glsl; sourceTree = "<group>"; };
+		4A6BB55518CC919600D40FF4 /* Fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Fragment.glsl; path = GlFiles/Fragment.glsl; sourceTree = "<group>"; };
+		4AAEBC9B18D5FFE300E42FDE /* OELPlotData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OELPlotData.h; path = Plot/OELPlotData.h; sourceTree = "<group>"; };
+		4AAEBC9C18D6000100E42FDE /* OELPlotData.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = OELPlotData.c; path = Plot/OELPlotData.c; sourceTree = "<group>"; };
 		4AB7AAF818C92FC000036040 /* OpenELab-Oscilloscope.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenELab-Oscilloscope.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AB7AAFB18C92FC000036040 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4AB7AAFD18C92FC000036040 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -62,6 +78,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4A6BB55118CC604000D40FF4 /* GLKit.framework in Frameworks */,
+				4A6BB53918CA860F00D40FF4 /* QuartzCore.framework in Frameworks */,
+				4A6BB53718CA860200D40FF4 /* OpenGLES.framework in Frameworks */,
 				4AB7AAFE18C92FC000036040 /* CoreGraphics.framework in Frameworks */,
 				4AB7AB0018C92FC000036040 /* UIKit.framework in Frameworks */,
 				4AB7AAFC18C92FC000036040 /* Foundation.framework in Frameworks */,
@@ -81,6 +100,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4A6BB53318CA71AD00D40FF4 /* Plot */ = {
+			isa = PBXGroup;
+			children = (
+				4AAEBC9B18D5FFE300E42FDE /* OELPlotData.h */,
+				4AAEBC9C18D6000100E42FDE /* OELPlotData.c */,
+				4A6BB53018CA71A100D40FF4 /* OELPlotView.h */,
+				4A6BB53118CA71A100D40FF4 /* OELPlotView.m */,
+			);
+			name = Plot;
+			sourceTree = "<group>";
+		};
+		4A6BB55418CC8F2A00D40FF4 /* GlFiles */ = {
+			isa = PBXGroup;
+			children = (
+				4A6BB55218CC8F1B00D40FF4 /* Vertex.glsl */,
+				4A6BB55518CC919600D40FF4 /* Fragment.glsl */,
+			);
+			name = GlFiles;
+			sourceTree = "<group>";
+		};
 		4AB7AAEF18C92FC000036040 = {
 			isa = PBXGroup;
 			children = (
@@ -103,6 +142,9 @@
 		4AB7AAFA18C92FC000036040 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4A6BB55018CC604000D40FF4 /* GLKit.framework */,
+				4A6BB53818CA860F00D40FF4 /* QuartzCore.framework */,
+				4A6BB53618CA860200D40FF4 /* OpenGLES.framework */,
 				4AB7AAFB18C92FC000036040 /* Foundation.framework */,
 				4AB7AAFD18C92FC000036040 /* CoreGraphics.framework */,
 				4AB7AAFF18C92FC000036040 /* UIKit.framework */,
@@ -114,6 +156,8 @@
 		4AB7AB0118C92FC000036040 /* OpenELab-Oscilloscope */ = {
 			isa = PBXGroup;
 			children = (
+				4A6BB55418CC8F2A00D40FF4 /* GlFiles */,
+				4A6BB53318CA71AD00D40FF4 /* Plot */,
 				4AB7AB0A18C92FC000036040 /* OELAppDelegate.h */,
 				4AB7AB0B18C92FC000036040 /* OELAppDelegate.m */,
 				4AB7AB0D18C92FC000036040 /* Main_iPhone.storyboard */,
@@ -236,6 +280,8 @@
 				4AB7AB1718C92FC000036040 /* Images.xcassets in Resources */,
 				4AB7AB0F18C92FC000036040 /* Main_iPhone.storyboard in Resources */,
 				4AB7AB0618C92FC000036040 /* InfoPlist.strings in Resources */,
+				4A6BB55318CC8F1B00D40FF4 /* Vertex.glsl in Resources */,
+				4A6BB55618CC919600D40FF4 /* Fragment.glsl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -255,7 +301,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				4AB7AB0818C92FC000036040 /* main.m in Sources */,
+				4AAEBC9D18D6000100E42FDE /* OELPlotData.c in Sources */,
 				4AB7AB1518C92FC000036040 /* OELViewController.m in Sources */,
+				4A6BB53218CA71A100D40FF4 /* OELPlotView.m in Sources */,
 				4AB7AB0C18C92FC000036040 /* OELAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -475,6 +523,7 @@
 				4AB7AB2F18C92FC000036040 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4AB7AB3018C92FC000036040 /* Build configuration list for PBXNativeTarget "OpenELab-OscilloscopeTests" */ = {
 			isa = XCConfigurationList;
@@ -483,6 +532,7 @@
 				4AB7AB3218C92FC000036040 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

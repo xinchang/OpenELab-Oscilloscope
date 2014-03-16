@@ -7,9 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Plot/OELPlotView.h"
 
 @interface OELViewController : UIViewController
 {
-    
+    OELPlotView *plotView;
 }
+
+@property(nonatomic,retain)    OELPlotView *plotView;
+
 @end
