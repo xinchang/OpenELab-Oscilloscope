@@ -46,7 +46,6 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
             NSLog(@"Failed to create frame buffer");
 			return nil;
 		}
-//
         //initalise plot data
         for (int i=0; i< OELPD_DATA_CHANNEL; i++) {
             data[i] = OELPDInit(OELPD_DATA_LENGTH);
@@ -57,10 +56,7 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
         
         [self compileShaders];
 		[self setupVBOs];
-        
-		[self setupView];
-//		[self drawView];
-	}
+}
 	gl_time = 0;
 	return self;
     
@@ -238,27 +234,6 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
 - (void)setupView
 {
 	
-//	// Sets up matrices and transforms for OpenGL ES
-//	glViewport(0, 0, backingWidth, backingHeight);
-//	glMatrixMode(GL_PROJECTION);
-//	glLoadIdentity();
-//	glOrthof(0, backingWidth, 0, backingHeight, -1.0f, 1.0f);
-//	glMatrixMode(GL_MODELVIEW);
-	
-	// Clears the view with black
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-//	glEnableClientState(GL_VERTEX_ARRAY);
-	///glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    
-//    glDisable(GL_DITHER);
-////    glDisable(GL_ALPHA_TEST);
-//    glDisable(GL_BLEND);
-//    glDisable(GL_STENCIL_TEST);
-////    glDisable(GL_FOG);
-//    glDisable(GL_TEXTURE_2D);
-//    glDisable(GL_DEPTH_TEST);
-    // Disable other state variables as appropriate.
-
 	
 }
 
@@ -272,7 +247,7 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
 float fcolor;
 float tempf;
 - (void)render:(CADisplayLink*)displayLink {
-	
+	//Clear
     [EAGLContext setCurrentContext:context];
     glViewport(0, 0, self.frame.size.width, self.frame.size.height);
     glBindFramebuffer(GL_FRAMEBUFFER, msaaFramebuffer);
@@ -281,8 +256,7 @@ float tempf;
     glEnable(GL_DEPTH_TEST);
     
     
-
-    
+    //Init matrix
     float aspect = fabsf(self.frame.size.width / self.frame.size.height);
     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(60.0f), aspect, 5.0f, 10.0f);
     GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -7);
@@ -294,6 +268,7 @@ float tempf;
     gl_time += 0.02;
     glUniform1f(gl_timeUniform, gl_time);
     
+    //draw the 1st line
     float f;
     for (int i=0; i<OELPD_DATA_LENGTH; i++) {
         f = (float)i/(OELPD_DATA_LENGTH)*4-2;
@@ -315,6 +290,7 @@ float tempf;
     glHint(GL_LINE_SMOOTH, GL_NICEST);
     glDrawArrays(GL_LINE_STRIP, 0, data[0]->length);
     
+    //draw the second line
      i=0;
     data[1]->vertices[i].point[0] = 0.5;
     data[1]->vertices[i].point[1] = 0.5;
@@ -345,7 +321,7 @@ float tempf;
     
     glDrawArrays(GL_LINE_STRIP, 0, data[i]->length);
     
-    
+    //MSAA
     // To discard depth render buffer contents whenever is possible
     const GLenum discards[]  = {GL_COLOR_ATTACHMENT0,GL_DEPTH_ATTACHMENT};
     glDiscardFramebufferEXT(GL_READ_FRAMEBUFFER_APPLE,2,discards);
@@ -393,22 +369,6 @@ float tempf;
     return texName;    
 }
 
--(void)drawView
-{
-    // the NSTimer seems to fire one final time even though it's been invalidated
-    // so just make sure and not draw if we're resigning active
-    if (self.applicationResignedActive) return;
-
-    // Make sure that you are drawing to the current context
-	[EAGLContext setCurrentContext:context];
-    
-    glBindFramebuffer(GL_FRAMEBUFFER, viewFramebuffer);
-    
-    glBindRenderbuffer(GL_RENDERBUFFER, viewRenderbuffer);
-	[context presentRenderbuffer:GL_RENDERBUFFER];
-    
-}
-
 - (void)startAnimation
 {
 //	animationTimer = [NSTimer scheduledTimerWithTimeInterval:animationInterval target:self selector:@selector(drawView) userInfo:nil repeats:YES];
@@ -431,167 +391,4 @@ float tempf;
 		[self startAnimation];
 	}
 }
-//
-//
-//- (void)drawOscilloscope
-//{
-//    
-//    
-//	// Clear the view
-//	glClear(GL_COLOR_BUFFER_BIT);
-//    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-//    glEnable(GL_BLEND);
-//    
-//    glClearColor(0, 104.0/255.0, 55.0/255.0, 1.0);
-//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//    glEnable(GL_DEPTH_TEST);
-//    
-////    CC3GLMatrix *projection = [CC3GLMatrix matrix];
-//    float h = 4.0f * self.frame.size.height / self.frame.size.width;
-////    [projection populateFromFrustumLeft:-2 andRight:2 andBottom:-h/2 andTop:h/2 andNear:4 andFar:10];
-////    glUniformMatrix4fv(_projectionUniform, 1, 0, projection.glMatrix);
-//
-////	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-//	
-////	glColor4f(1., 1., 1., 1.);
-//	
-////	glPushMatrix();
-//	
-////	glTranslatef(0., 480., 0.);
-////	glRotatef(-90., 0., 0., 1.);
-//	
-//	
-////	glEnable(GL_TEXTURE_2D);
-////	glEnableClientState(GL_VERTEX_ARRAY);
-////	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-//	
-//	{
-//		// Draw our background oscilloscope screen
-//		const GLfloat vertices[] = {
-//			0., 0.,
-//			512., 0.,
-//			0.,  512.,
-//			512.,  512.,
-//		};
-//		const GLshort texCoords[] = {
-//			0, 0,
-//			1, 0,
-//			0, 1,
-//			1, 1,
-//		};
-//		
-//		
-////		glBindTexture(GL_TEXTURE_2D, bgTexture);
-//		
-////		glVertexPointer(2, GL_FLOAT, 0, vertices);
-////		glTexCoordPointer(2, GL_SHORT, 0, texCoords);
-//		
-//		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-//	}
-//	
-//	{
-//		// Draw our buttons
-//		const GLfloat vertices[] = {
-//			0., 0.,
-//			112, 0.,
-//			0.,  64,
-//			112,  64,
-//		};
-//		const GLshort texCoords[] = {
-//			0, 0,
-//			1, 0,
-//			0, 1,
-//			1, 1,
-//		};
-//		
-////		glPushMatrix();
-//		
-////		glVertexPointer(2, GL_FLOAT, 0, vertices);
-////		glTexCoordPointer(2, GL_SHORT, 0, texCoords);
-//        
-////		glTranslatef(5, 0, 0);
-////		glBindTexture(GL_TEXTURE_2D, sonoTexture);
-////		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-////		glTranslatef(99, 0, 0);
-////		glBindTexture(GL_TEXTURE_2D, mute ? muteOnTexture : muteOffTexture);
-//		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-////		glTranslatef(99, 0, 0);
-////		glBindTexture(GL_TEXTURE_2D, (displayMode == aurioTouchDisplayModeOscilloscopeFFT) ? fftOnTexture : fftOffTexture);
-//		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-//		
-////		glPopMatrix();
-//		
-//	}
-//	
-//	
-//    int drawBufferLen = 1024;
-//	GLfloat *oscilLine_ptr;
-//	GLfloat max = drawBufferLen;
-//	SInt8 *drawBuffer_ptr;
-//
-//    
-//	// Alloc an array for our oscilloscope line vertices
-////	if (resetOscilLine) {
-//	GLfloat* oscilLine = (GLfloat*)malloc(drawBufferLen * 2 * sizeof(GLfloat));
-//    //oscilLine = (GLfloat*)realloc(oscilLine, drawBufferLen * 2 * sizeof(GLfloat));
-////		resetOscilLine = NO;
-////	}
-//	
-////	glPushMatrix();
-//	
-//	// Translate to the left side and vertical center of the screen, and scale so that the screen coordinates
-//	// go from 0 to 1 along the X, and -1 to 1 along the Y
-////	glTranslatef(17., 182., 0.);
-////	glScalef(448., 116., 1.);
-//	
-//	// Set up some GL state for our oscilloscope lines
-//	glDisable(GL_TEXTURE_2D);
-////	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-////	glDisableClientState(GL_COLOR_ARRAY);
-////	glDisable(GL_LINE_SMOOTH);
-//	glLineWidth(2.);
-//	
-//    int kNumDrawBuffers = 12;
-//	int drawBuffer_i;
-//    SInt8 *drawBuffers[kNumDrawBuffers];
-//    
-//	// Draw a line for each stored line in our buffer (the lines are stored and fade over time)
-//	for (drawBuffer_i=0; drawBuffer_i<kNumDrawBuffers; drawBuffer_i++)
-//	{
-//		if (!drawBuffers[drawBuffer_i]) continue;
-//		
-//		oscilLine_ptr = oscilLine;
-//		drawBuffer_ptr = drawBuffers[drawBuffer_i];
-//		
-//		GLfloat i;
-//		// Fill our vertex array with points
-//		for (i=0.; i<max; i=i+1.)
-//		{
-//			*oscilLine_ptr++ = i/max;
-//            Float32 f = sin(i/max*2*3.14);//(Float32)(*drawBuffer_ptr++) / 128.;
-//			*oscilLine_ptr++ =f;
-//		}
-//		
-//		// If we're drawing the newest line, draw it in solid green. Otherwise, draw it in a faded green.
-////		if (drawBuffer_i == 0)
-////			glColor4f(0., 1., 0., 1.);
-////		else
-////			glColor4f(0., 1., 0., (.24 * (1. - ((GLfloat)drawBuffer_i / (GLfloat)kNumDrawBuffers))));
-//		
-//		// Set up vertex pointer,
-////		glVertexPointer(2, GL_FLOAT, 0, oscilLine);
-//		
-//		// and draw the line.
-//		glDrawArrays(GL_LINE_STRIP, 0, drawBufferLen);
-//		
-//	}
-//	
-////	glPopMatrix();
-//    
-////	glPopMatrix();
-//    
-//    free(oscilLine);
-//    
-//}
-
 @end
