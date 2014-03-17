@@ -144,11 +144,15 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
     
     
     int i;
-    for (i=0; i<OELPD_DATA_LENGTH; i++) {
-        data[0]->vertices[i].color[0] = 1.0;
-        data[0]->vertices[i].color[1] = 1.0;
-        data[0]->vertices[i].color[2] = 1.0;
-        data[0]->vertices[i].color[3] = 1.0;
+    for (int j=0; j<OELPD_DATA_CHANNEL; j++) {
+        
+        for (i=0; i<OELPD_DATA_LENGTH; i++) {
+            data[j]->vertices[i].color[0] = 1.0;
+            data[j]->vertices[i].color[1] = 1.0;
+            data[j]->vertices[i].color[2] = 1.0;
+            data[j]->vertices[i].color[3] = 1.0;
+            
+        }
     }
     for (i=0; i<OELPD_DATA_CHANNEL; i++) {
         glGenBuffers(1, vertexBuffer+i);
@@ -187,6 +191,32 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
     }
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER) ;
+    if(status != GL_FRAMEBUFFER_COMPLETE) {
+        NSLog(@"failed to make complete framebuffer object %x", status);
+        return NO;
+    }
+
+    
+    //Generate our MSAA Frame and Render buffers
+    glGenFramebuffers(1, &msaaFramebuffer);
+    glGenRenderbuffers(1, &msaaRenderBuffer);
+    
+    //Bind our MSAA buffers
+    glBindFramebuffer(GL_FRAMEBUFFER, msaaFramebuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, msaaRenderBuffer);
+    
+    // Generate the msaaDepthBuffer.
+    // 4 will be the number of pixels that the MSAA buffer will use in order to make one pixel on the render buffer.
+    glRenderbufferStorageMultisampleAPPLE(GL_RENDERBUFFER, 4, GL_RGBA8_OES, backingWidth, backingHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, msaaRenderBuffer);
+
+    //Bind the msaa depth buffer.
+    glGenRenderbuffers(1, &msaaDepthBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, msaaDepthBuffer);
+    glRenderbufferStorageMultisampleAPPLE(GL_RENDERBUFFER_OES, 4, GL_DEPTH_COMPONENT16, backingWidth , backingHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, msaaDepthBuffer);
+    
+    status = glCheckFramebufferStatus(GL_FRAMEBUFFER) ;
     if(status != GL_FRAMEBUFFER_COMPLETE) {
         NSLog(@"failed to make complete framebuffer object %x", status);
         return NO;
@@ -244,12 +274,12 @@ float tempf;
 - (void)render:(CADisplayLink*)displayLink {
 	
     [EAGLContext setCurrentContext:context];
-    
+    glViewport(0, 0, self.frame.size.width, self.frame.size.height);
+    glBindFramebuffer(GL_FRAMEBUFFER, msaaFramebuffer);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     
-    glViewport(0, 0, self.frame.size.width, self.frame.size.height);
     
 
     
@@ -261,7 +291,7 @@ float tempf;
     
     glUniformMatrix4fv(projectionUniform, 1, 0, projectionMatrix.m);
     glUniformMatrix4fv(modelViewUniform, 1, 0, modelViewMatrix.m);
-    gl_time += 0.2;
+    gl_time += 0.02;
     glUniform1f(gl_timeUniform, gl_time);
     
     float f;
@@ -272,7 +302,6 @@ float tempf;
         data[0]->vertices[i].point[2] = 0.2;
         data[0]->vertices[i].color[1] = 0.5*sinf(f+gl_time)+0.5;
     }
-    
     int i =0;
     
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer[i]);
@@ -286,9 +315,51 @@ float tempf;
     glHint(GL_LINE_SMOOTH, GL_NICEST);
     glDrawArrays(GL_LINE_STRIP, 0, data[0]->length);
     
+     i=0;
+    data[1]->vertices[i].point[0] = 0.5;
+    data[1]->vertices[i].point[1] = 0.5;
+    data[1]->vertices[i].point[2] = 0;
+    i=1;
+    data[1]->vertices[i].point[0] = 0.5;
+    data[1]->vertices[i].point[1] = -0.5;
+    data[1]->vertices[i].point[2] = 0;
+    i=2;
+    data[1]->vertices[i].point[0] = -0.5;
+    data[1]->vertices[i].point[1] = -0.5;
+    data[1]->vertices[i].point[2] = 0;
+    i=3;
+    data[1]->vertices[i].point[0] = -0.5;
+    data[1]->vertices[i].point[1] = 0.5;
+    data[1]->vertices[i].point[2] = 0;
     
-    glBindRenderbuffer(GL_RENDERBUFFER, viewRenderbuffer);
-	[context presentRenderbuffer:GL_RENDERBUFFER];
+    i =1;
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer[i]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(*data[i]->vertices)*data[i]->length, data[i]->vertices, GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(positionSlot, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+    glVertexAttribPointer(colorSlot, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) (sizeof(float) * 3));
+
+    projectionMatrix = GLKMatrix4MakeScale(1, aspect, 1);
+    modelViewMatrix = GLKMatrix4Identity;
+    glUniformMatrix4fv(projectionUniform, 1, 0, projectionMatrix.m);
+    glUniformMatrix4fv(modelViewUniform, 1, 0, modelViewMatrix.m);
+    
+    glDrawArrays(GL_LINE_STRIP, 0, data[i]->length);
+    
+    
+    // To discard depth render buffer contents whenever is possible
+    const GLenum discards[]  = {GL_COLOR_ATTACHMENT0,GL_DEPTH_ATTACHMENT};
+    glDiscardFramebufferEXT(GL_READ_FRAMEBUFFER_APPLE,2,discards);
+    
+    //Bind both MSAA and View FrameBuffers.
+    glBindFramebufferOES(GL_READ_FRAMEBUFFER_APPLE, msaaFramebuffer);
+    glBindFramebufferOES(GL_DRAW_FRAMEBUFFER_APPLE, viewFramebuffer);
+    
+    // Call a resolve to combine both buffers
+    glResolveMultisampleFramebufferAPPLE();
+    
+    // Present final image to screen
+    glBindRenderbufferOES(GL_RENDERBUFFER, viewRenderbuffer);
+    [context presentRenderbuffer:GL_RENDERBUFFER];
     
 }
 - (GLuint)setupTexture:(NSString *)fileName {
