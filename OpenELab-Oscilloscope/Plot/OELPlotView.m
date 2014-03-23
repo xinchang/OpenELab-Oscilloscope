@@ -11,6 +11,14 @@
 #import <OpenGLES/EAGLDrawable.h>
 #import <GLKit/GLKit.h>
 
+#import <stdio.h>
+#import <wchar.h>
+
+#import "freetype-gl.h"
+#import "text-buffer.h"
+#import "mat4.h"
+#import "shader.h"
+
 #define USE_DEPTH_BUFFER 1
 
 @implementation OELPlotView
@@ -54,8 +62,18 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
             fcolor_array[i]=1.0;
         }
         
+        //setup text buffer
+        [self setupTextBuffer];
+        
         [self compileShaders];
 		[self setupVBOs];
+        UIButton* aButton = [[UIButton alloc]initWithFrame:CGRectMake(100, 100, 100, 100)];
+        [aButton setTitle:@"HAHA" forState:UIControlStateNormal];
+        [self addSubview:aButton];
+        
+        
+        
+        
 }
 	gl_time = 0;
 	return self;
@@ -84,7 +102,7 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
     GLuint shaderHandle = glCreateShader(shaderType);
     
     const char * shaderStringUTF8 = [shaderString UTF8String];
-    int shaderStringLength = [shaderString length];
+    int shaderStringLength = (int)[shaderString length];
     glShaderSource(shaderHandle, 1, &shaderStringUTF8, &shaderStringLength);
     
     glCompileShader(shaderHandle);
@@ -100,41 +118,58 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
     }
     
     return shaderHandle;
-    
 }
-- (void)compileShaders {
+- (void)compileShaders{
     
     GLuint vertexShader = [self compileShader:@"Vertex"
                                      withType:GL_VERTEX_SHADER];
     GLuint fragmentShader = [self compileShader:@"Fragment"
                                        withType:GL_FRAGMENT_SHADER];
     
-    GLuint programHandle = glCreateProgram();
-    glAttachShader(programHandle, vertexShader);
-    glAttachShader(programHandle, fragmentShader);
-    glLinkProgram(programHandle);
+    lineProgramHandle = glCreateProgram();
+    glAttachShader(lineProgramHandle, vertexShader);
+    glAttachShader(lineProgramHandle, fragmentShader);
+    glLinkProgram(lineProgramHandle);
     
     //Check errors
     GLint linkSuccess;
-    glGetProgramiv(programHandle, GL_LINK_STATUS, &linkSuccess);
+    glGetProgramiv(lineProgramHandle, GL_LINK_STATUS, &linkSuccess);
     if (linkSuccess == GL_FALSE) {
         GLchar messages[256];
-        glGetProgramInfoLog(programHandle, sizeof(messages), 0, &messages[0]);
+        glGetProgramInfoLog(lineProgramHandle, sizeof(messages), 0, &messages[0]);
         NSString *messageString = [NSString stringWithUTF8String:messages];
         NSLog(@"%@", messageString);
         exit(1);
     }
+    NSString* vertPath = [[NSBundle mainBundle] pathForResource:@"v3f-t2f-c4f"
+                                                         ofType:@"vert"];
+    NSString* fragPath = [[NSBundle mainBundle] pathForResource:@"v3f-t2f-c4f"
+                                                         ofType:@"frag"];
     
-    glUseProgram(programHandle);
-    positionSlot = glGetAttribLocation(programHandle, "Position");
-    colorSlot = glGetAttribLocation(programHandle, "SourceColor");
-    projectionUniform = glGetUniformLocation(programHandle, "Projection");
-    modelViewUniform = glGetUniformLocation(programHandle, "Modelview");
-    gl_timeUniform = glGetUniformLocation(programHandle, "time");
+    textProgramHandle = shader_load( [vertPath cStringUsingEncoding:NSUTF8StringEncoding],
+                                    [fragPath cStringUsingEncoding:NSUTF8StringEncoding]);
     
-    glEnableVertexAttribArray(positionSlot);
-    glEnableVertexAttribArray(colorSlot);
 
+}
+-(void) switchProgram:(OELP_PROGRAM) program{
+    switch(program){
+        case LINE_PROGRAM:
+            glUseProgram(lineProgramHandle);
+            
+            positionSlot = glGetAttribLocation(lineProgramHandle, "Position");
+            colorSlot = glGetAttribLocation(lineProgramHandle, "SourceColor");
+            projectionUniform = glGetUniformLocation(lineProgramHandle, "Projection");
+            modelViewUniform = glGetUniformLocation(lineProgramHandle, "Modelview");
+            gl_timeUniform = glGetUniformLocation(lineProgramHandle, "time");
+            
+            glEnableVertexAttribArray(positionSlot);
+            glEnableVertexAttribArray(colorSlot);
+            break;
+    
+        case TEXT_PROGRAM:
+            
+            break;
+    }
 }
 - (void)setupVBOs {
     
@@ -147,7 +182,6 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
             data[j]->vertices[i].color[1] = 1.0;
             data[j]->vertices[i].color[2] = 1.0;
             data[j]->vertices[i].color[3] = 1.0;
-            
         }
     }
     for (i=0; i<OELPD_DATA_CHANNEL; i++) {
@@ -192,7 +226,6 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
         return NO;
     }
 
-    
     //Generate our MSAA Frame and Render buffers
     glGenFramebuffers(1, &msaaFramebuffer);
     glGenRenderbuffers(1, &msaaRenderBuffer);
@@ -231,6 +264,110 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
 		depthRenderbuffer = 0;
 	}
 }
+
+-(void)setupTextBuffer
+{
+    int width = backingWidth;
+    int height = backingHeight;
+    vec4 blue  = {{0,0,1,1}};
+//    vec4 black = {{1,1,1,1}};
+    
+    texture_atlas_t * atlas = texture_atlas_new( 512, 512, 1);
+    NSString* fontPath = [[NSBundle mainBundle] pathForResource:@"Vera"
+                                                           ofType:@"ttf"];
+    
+    texture_font_t * big = texture_font_new_from_file( atlas, 50, [fontPath cStringUsingEncoding:NSUTF8StringEncoding]);
+    
+    text_buffer  = vertex_buffer_new( "vertex:3f,tex_coord:2f,color:4f" );
+    
+    vec2 origin;
+    
+    texture_glyph_t *glyph  = texture_font_get_glyph( big, L'g' );
+    origin.x = 0;//width/2  - glyph->offset_x - glyph->width/2;
+    origin.y = 0;//height/2 - glyph->offset_y + glyph->height/2;
+    [self addText:text_buffer font:big text:L"g" color:&blue pen:&origin];
+//    
+//    
+//    pen.x = width/2 - 48;
+//    pen.y = .2*height - 18;
+//    add_text( text_buffer, small, L"advance_x", &blue, &pen );
+//    
+//    pen.x = width/2 - 20;
+//    pen.y = .8*height + 3;
+//    add_text( text_buffer, small, L"width", &blue, &pen );
+//    
+//    pen.x = width/2 - glyph->width/2 + 5;
+//    pen.y = .85*height-8;
+//    add_text( text_buffer, small, L"offset_x", &blue, &pen );
+//    
+//    pen.x = 0.2*width/2-30;
+//    pen.y = origin.y + glyph->offset_y - glyph->height/2;
+//    add_text( text_buffer, small, L"height", &blue, &pen );
+//    
+//    pen.x = 0.8*width+3;
+//    pen.y = origin.y + glyph->offset_y/2 -6;
+//    add_text( text_buffer, small, L"offset_y", &blue, &pen );
+//    
+//    pen.x = width/2  - glyph->offset_x - glyph->width/2 - 58;
+//    pen.y = height/2 - glyph->offset_y + glyph->height/2 - 20;
+//    add_text( text_buffer, small, L"Origin", &black, &pen );
+    
+    
+//    text_shader = shader_load( "shaders/v3f-t2f-c4f.vert",
+//                              "shaders/v3f-t2f-c4f.frag" );
+//    shader = shader_load( "shaders/v3f-c4f.vert",
+//                         "shaders/v3f-c4f.frag" );
+//    mat4_set_identity( &projection );
+//    mat4_set_identity( &model );
+//    mat4_set_identity( &view );
+
+}
+// ------------------------------------------------------- typedef & struct ---
+typedef struct {
+    float x, y, z;    // position
+    float s, t;       // texture
+    float r, g, b, a; // color
+} vertex_t;
+
+typedef struct {
+    float x, y, z;
+    vec4 color;
+} point_t;
+// --------------------------------------------------------------- add_text ---
+-(void) addText:(vertex_buffer_t *) buffer font:( texture_font_t * )font text:(wchar_t *)  text color:(vec4 * )color pen:(vec2 *) pen
+{
+    size_t i;
+    float r = color->red, g = color->green, b = color->blue, a = color->alpha;
+    for( i=0; i<wcslen(text); ++i )
+    {
+        texture_glyph_t *glyph = texture_font_get_glyph( font, text[i] );
+        if( glyph != NULL )
+        {
+            int kerning = 0;
+            if( i > 0)
+            {
+                kerning = texture_glyph_get_kerning( glyph, text[i-1] );
+            }
+            pen->x += kerning;
+            int x0  = (int)( pen->x + glyph->offset_x );
+            int y0  = (int)( pen->y + glyph->offset_y );
+            int x1  = (int)( x0 + glyph->width );
+            int y1  = (int)( y0 - glyph->height );
+            float s0 = glyph->s0;
+            float t0 = glyph->t0;
+            float s1 = glyph->s1;
+            float t1 = glyph->t1;
+            GLuint indices[] = {0,1,2,0,2,3};
+            vertex_t vertices[] = { { x0,y0,0,  s0,t0,  r,g,b,a },
+                { x0,y1,0,  s0,t1,  r,g,b,a },
+                { x1,y1,0,  s1,t1,  r,g,b,a },
+                { x1,y0,0,  s1,t0,  r,g,b,a } };
+            vertex_buffer_push_back( buffer, vertices, 4, indices, 6 );
+            pen->x += glyph->advance_x;
+        }
+    }
+}
+
 - (void)setupView
 {
 	
@@ -251,13 +388,19 @@ float tempf;
     [EAGLContext setCurrentContext:context];
     glViewport(0, 0, self.frame.size.width, self.frame.size.height);
     glBindFramebuffer(GL_FRAMEBUFFER, msaaFramebuffer);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     
-    
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glEnable( GL_TEXTURE_2D );
+ 
+    //choose program
+    [self switchProgram:LINE_PROGRAM];
     //Init matrix
     float aspect = fabsf(self.frame.size.width / self.frame.size.height);
+
     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(60.0f), aspect, 5.0f, 10.0f);
     GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -7);
     int rotation = 90*gl_time/100;
@@ -288,7 +431,7 @@ float tempf;
     glLineWidth(2.0f);
     glEnable(GL_LINE_SMOOTH);
     glHint(GL_LINE_SMOOTH, GL_NICEST);
-    glDrawArrays(GL_LINE_STRIP, 0, data[0]->length);
+    glDrawArrays(GL_LINE_STRIP, 0, (int)data[0]->length);
     
     //draw the second line
      i=0;
@@ -314,12 +457,37 @@ float tempf;
     glVertexAttribPointer(positionSlot, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
     glVertexAttribPointer(colorSlot, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) (sizeof(float) * 3));
 
-    projectionMatrix = GLKMatrix4MakeScale(1, aspect, 1);
+    mat4 model, view, projection;
+    mat4_set_identity( &projection );
+    mat4_set_identity( &model );
+    mat4_set_identity( &view );
+   
+//
+    projectionMatrix = GLKMatrix4MakeScale(0.1, aspect*0.1, 0.1);
     modelViewMatrix = GLKMatrix4Identity;
     glUniformMatrix4fv(projectionUniform, 1, 0, projectionMatrix.m);
-    glUniformMatrix4fv(modelViewUniform, 1, 0, modelViewMatrix.m);
+    glUniformMatrix4fv(modelViewUniform, 1, 0, model.data);
     
-    glDrawArrays(GL_LINE_STRIP, 0, data[i]->length);
+    glDrawArrays(GL_LINE_STRIP, 0, (int)data[i]->length);
+
+   //    glDrawElements(GL_TRIANGLE_STRIP, text_buffer->vertices->size, GL_UNSIGNED_BYTE, 0);
+    
+    [self switchProgram:TEXT_PROGRAM];
+    
+    projectionMatrix = GLKMatrix4MakeScale(0.001, aspect*0.001, 0.001);
+    glUseProgram( textProgramHandle );
+    {
+        glUniform1i( glGetUniformLocation( textProgramHandle, "texture" ),
+                    0 );
+        glUniformMatrix4fv( glGetUniformLocation( textProgramHandle, "model" ),
+                           1, 0, model.data);
+        glUniformMatrix4fv( glGetUniformLocation( textProgramHandle, "view" ),
+                           1, 0, view.data);
+        glUniformMatrix4fv( glGetUniformLocation( textProgramHandle, "projection" ),
+                           1, 0, projectionMatrix.m);
+        vertex_buffer_render( text_buffer, GL_TRIANGLES );
+    }
+
     
     //MSAA
     // To discard depth render buffer contents whenever is possible
@@ -338,57 +506,45 @@ float tempf;
     [context presentRenderbuffer:GL_RENDERBUFFER];
     
 }
-- (GLuint)setupTexture:(NSString *)fileName {
-    CGImageRef spriteImage = [UIImage imageNamed:fileName].CGImage;
-    if (!spriteImage) {
-        NSLog(@"Failed to load image %@", fileName);
-        exit(1);
-    }
-    
-    size_t width = CGImageGetWidth(spriteImage);
-    size_t height = CGImageGetHeight(spriteImage);
-    
-//    GLubyte * spriteData = (GLubyte *) calloc(width*height*4, sizeof(GLubyte));
-    GLubyte * spriteData = (GLubyte *) malloc(width*height*4);
-    CGContextRef spriteContext = CGBitmapContextCreate(spriteData, width, height, 8, width*4,
-                                                       CGImageGetColorSpace(spriteImage), kCGImageAlphaPremultipliedLast);
-    
-    CGContextDrawImage(spriteContext, CGRectMake(0, 0, width, height), spriteImage);
-    
-    CGContextRelease(spriteContext);
-    
-    GLuint texName;
-    glGenTextures(1, &texName);
-    glBindTexture(GL_TEXTURE_2D, texName);
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spriteData);
-    
-    free(spriteData);        
-    return texName;    
-}
+//- (GLuint)setupTexture:(NSString *)fileName {
+//    CGImageRef spriteImage = [UIImage imageNamed:fileName].CGImage;
+//    if (!spriteImage) {
+//        NSLog(@"Failed to load image %@", fileName);
+//        exit(1);
+//    }
+//    
+//    size_t width = CGImageGetWidth(spriteImage);
+//    size_t height = CGImageGetHeight(spriteImage);
+//    
+////    GLubyte * spriteData = (GLubyte *) calloc(width*height*4, sizeof(GLubyte));
+//    GLubyte * spriteData = (GLubyte *) malloc(width*height*4);
+//    CGContextRef spriteContext = CGBitmapContextCreate(spriteData, width, height, 8, width*4,
+//                                                       CGImageGetColorSpace(spriteImage), kCGImageAlphaPremultipliedLast);
+//    
+//    CGContextDrawImage(spriteContext, CGRectMake(0, 0, width, height), spriteImage);
+//    
+//    CGContextRelease(spriteContext);
+//    
+//    GLuint texName;
+//    glGenTextures(1, &texName);
+//    glBindTexture(GL_TEXTURE_2D, texName);
+//    
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//    
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spriteData);
+//    
+//    free(spriteData);        
+//    return texName;    
+//}
 
 - (void)startAnimation
 {
-//	animationTimer = [NSTimer scheduledTimerWithTimeInterval:animationInterval target:self selector:@selector(drawView) userInfo:nil repeats:YES];
-//	animationStarted = [NSDate timeIntervalSinceReferenceDate];
     [self setupDisplayLink];
 }
 
 - (void)stopAnimation
 {
-	[animationTimer invalidate];
-	animationTimer = nil;
+
 }
 
-- (void)setAnimationInterval:(NSTimeInterval)interval
-{
-	animationInterval = interval;
-	
-	if(animationTimer) {
-		[self stopAnimation];
-		[self startAnimation];
-	}
-}
 @end
