@@ -14,10 +14,16 @@
 
 #import "OELPlotData.h"
 
+#import "vertex-buffer.h"
+#import "text-buffer.h"
+
 #define OELPD_DATA_CHANNEL 2 //Data channel number
 #define OELPD_DATA_LENGTH 1024*16 //Data length for one channel
 
-
+typedef enum{
+    LINE_PROGRAM,
+    TEXT_PROGRAM
+} OELP_PROGRAM;
 @interface OELPlotView : UIView
 {
 @private
@@ -54,6 +60,12 @@
     GLuint modelViewUniform;
     GLuint gl_timeUniform;
     
+    GLuint lineProgramHandle;
+    GLuint textProgramHandle;
+    
+    vertex_buffer_t * text_buffer;
+    
+    
     GLuint vertexBuffer[OELPD_DATA_CHANNEL];
     OELPlotData *data[OELPD_DATA_CHANNEL];
     
@@ -62,8 +74,6 @@
 
 - (void)startAnimation;
 - (void)stopAnimation;
-- (void)drawView;
-- (void)setAnimationInterval:(NSTimeInterval)interval;
 
 @property(assign) BOOL applicationResignedActive;
 
