@@ -16,6 +16,8 @@
 
 #import "vertex-buffer.h"
 #import "text-buffer.h"
+#import "OELTextUtility.h"
+#import "OELDrawingTree.h"
 
 #define OELPD_DATA_CHANNEL 2 //Data channel number
 #define OELPD_DATA_LENGTH 1024*16 //Data length for one channel
@@ -24,7 +26,7 @@ typedef enum{
     LINE_PROGRAM,
     TEXT_PROGRAM
 } OELP_PROGRAM;
-@interface OELPlotView : UIView
+@interface OELPlotView : UIView<OELDrawingTreeDelegate>
 {
 @private
 
@@ -64,16 +66,22 @@ typedef enum{
     GLuint textProgramHandle;
     
     vertex_buffer_t * text_buffer;
+    OELTextUtility *text;
     
     
     GLuint vertexBuffer[OELPD_DATA_CHANNEL];
     OELPlotData *data[OELPD_DATA_CHANNEL];
     
     BOOL applicationResignedActive;
+    
+    OELDrawingTree drawingTree;
 }
 
 - (void)startAnimation;
 - (void)stopAnimation;
+
+-(void)oELDraw;
+-(OELDrawingTree*) getOELDrawingTree;
 
 @property(assign) BOOL applicationResignedActive;
 

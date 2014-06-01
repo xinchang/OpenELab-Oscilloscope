@@ -22,6 +22,8 @@
 		4A05D6C918DE5457001C339E /* Vera.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4A05D55118DE001D001C339E /* Vera.ttf */; };
 		4A05D6CA18DE545F001C339E /* v3f-t2f-c4f.frag in Resources */ = {isa = PBXBuildFile; fileRef = 4A05D58718DE001D001C339E /* v3f-t2f-c4f.frag */; };
 		4A05D6CB18DE5461001C339E /* v3f-t2f-c4f.vert in Resources */ = {isa = PBXBuildFile; fileRef = 4A05D58818DE001D001C339E /* v3f-t2f-c4f.vert */; };
+		4A442FAE193A35B20072800E /* OELTextUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A442FAD193A35B20072800E /* OELTextUtility.m */; };
+		4A442FB2193A60180072800E /* OELDrawingTree.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A442FB1193A60180072800E /* OELDrawingTree.m */; };
 		4A6BB53218CA71A100D40FF4 /* OELPlotView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BB53118CA71A100D40FF4 /* OELPlotView.m */; };
 		4A6BB53718CA860200D40FF4 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A6BB53618CA860200D40FF4 /* OpenGLES.framework */; };
 		4A6BB53918CA860F00D40FF4 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A6BB53818CA860F00D40FF4 /* QuartzCore.framework */; };
@@ -382,6 +384,10 @@
 		4A05D6B718DE0CE4001C339E /* ttpic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ttpic.h; sourceTree = "<group>"; };
 		4A05D6B818DE0CE4001C339E /* ttpload.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ttpload.c; sourceTree = "<group>"; };
 		4A05D6B918DE0CE4001C339E /* ttpload.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ttpload.h; sourceTree = "<group>"; };
+		4A442FAC193A35B20072800E /* OELTextUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OELTextUtility.h; path = Utilities/OELTextUtility.h; sourceTree = "<group>"; };
+		4A442FAD193A35B20072800E /* OELTextUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OELTextUtility.m; path = Utilities/OELTextUtility.m; sourceTree = "<group>"; };
+		4A442FB0193A60180072800E /* OELDrawingTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OELDrawingTree.h; path = Plot/OELDrawingTree.h; sourceTree = "<group>"; };
+		4A442FB1193A60180072800E /* OELDrawingTree.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OELDrawingTree.m; path = Plot/OELDrawingTree.m; sourceTree = "<group>"; };
 		4A6BB53018CA71A100D40FF4 /* OELPlotView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OELPlotView.h; path = Plot/OELPlotView.h; sourceTree = "<group>"; };
 		4A6BB53118CA71A100D40FF4 /* OELPlotView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OELPlotView.m; path = Plot/OELPlotView.m; sourceTree = "<group>"; };
 		4A6BB53618CA860200D40FF4 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -935,8 +941,12 @@
 				4A05D54118DE001D001C339E /* Freetype-gl */,
 				4AAEBC9B18D5FFE300E42FDE /* OELPlotData.h */,
 				4AAEBC9C18D6000100E42FDE /* OELPlotData.c */,
+				4A442FB0193A60180072800E /* OELDrawingTree.h */,
+				4A442FB1193A60180072800E /* OELDrawingTree.m */,
 				4A6BB53018CA71A100D40FF4 /* OELPlotView.h */,
 				4A6BB53118CA71A100D40FF4 /* OELPlotView.m */,
+				4A442FAC193A35B20072800E /* OELTextUtility.h */,
+				4A442FAD193A35B20072800E /* OELTextUtility.m */,
 			);
 			name = Plot;
 			sourceTree = "<group>";
@@ -1151,6 +1161,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4A05D6C318DE531E001C339E /* shader.c in Sources */,
+				4A442FAE193A35B20072800E /* OELTextUtility.m in Sources */,
 				4A05D59F18DE0042001C339E /* vertex-attribute.c in Sources */,
 				4AB7AB0818C92FC000036040 /* main.m in Sources */,
 				4A05D59E18DE0042001C339E /* vector.c in Sources */,
@@ -1161,6 +1172,7 @@
 				4A6BB53218CA71A100D40FF4 /* OELPlotView.m in Sources */,
 				4A05D59A18DE0042001C339E /* platform.c in Sources */,
 				4A05D59718DE0042001C339E /* font-manager.c in Sources */,
+				4A442FB2193A60180072800E /* OELDrawingTree.m in Sources */,
 				4AB7AB0C18C92FC000036040 /* OELAppDelegate.m in Sources */,
 				4A05D5A318DE06B2001C339E /* texture-font.c in Sources */,
 				4A05D59B18DE0042001C339E /* text-buffer.c in Sources */,
