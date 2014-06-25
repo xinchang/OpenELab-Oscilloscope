@@ -18,9 +18,12 @@
 #import "text-buffer.h"
 #import "OELTextUtility.h"
 #import "OELDrawingTree.h"
+#import "OELDrawAxis.h"
+#import "OELChannel.h"
 
 #define OELPD_DATA_CHANNEL 2 //Data channel number
 #define OELPD_DATA_LENGTH 1024*16 //Data length for one channel
+
 
 typedef enum{
     LINE_PROGRAM,
@@ -67,14 +70,18 @@ typedef enum{
     
     vertex_buffer_t * text_buffer;
     OELTextUtility *text;
-    
+    OELDrawAxis *drawAxis;
     
     GLuint vertexBuffer[OELPD_DATA_CHANNEL];
     OELPlotData *data[OELPD_DATA_CHANNEL];
+    OELPlotData *data2;
     
     BOOL applicationResignedActive;
     
-    OELDrawingTree drawingTree;
+    OELDrawingTree *drawingTree;
+    OELChannel* channel;
+    
+    float lastXDiv;
 }
 
 - (void)startAnimation;

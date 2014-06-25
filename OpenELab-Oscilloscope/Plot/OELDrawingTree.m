@@ -9,10 +9,12 @@
 #import "OELDrawingTree.h"
 
 @implementation OELDrawingTree
-@synthesize owner,children;
--(id)init
+@synthesize owner,children,visible;
+-(id)initWithDelegate:(id<OELDrawingTreeDelegate>)delegate;
 {
     if((self = [super init])) {
+        owner = delegate;
+        visible = YES;
         children = [[NSMutableArray alloc]init];
     }
     return self;
@@ -22,8 +24,9 @@
 -(void)drawTree
 {
     [owner oELDraw];
-    for (id<OELDrawingTreeDelegate> del in children) {
-        [[del getOELDrawingTree] drawTree];
+    for (OELDrawingTree* del in children) {
+        if ([del visible])
+            [del drawTree];
     }
 }
 @end

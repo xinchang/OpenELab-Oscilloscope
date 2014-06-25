@@ -17,6 +17,9 @@
 #import "mat4.h"
 #import "shader.h"
 
+#import "OELTextShader.h"
+#import "OELScreenShader.h"
+
 
 
 #define USE_DEPTH_BUFFER 1
@@ -54,22 +57,28 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
             NSLog(@"Failed to create frame buffer");
 			return nil;
 		}
-        //initalise plot data
-        for (int i=0; i< OELPD_DATA_CHANNEL; i++) {
-            data[i] = OELPDInit(OELPD_DATA_LENGTH);
-        }
-        for (int i= 0; i<OELPD_DATA_LENGTH*4; i++) {
-            fcolor_array[i]=1.0;
-        }
         
         [self compileShaders];
-		[self setupVBOs];
-        UIButton* aButton = [[UIButton alloc]initWithFrame:CGRectMake(100, 100, 100, 100)];
-        [aButton setTitle:@"HAHA" forState:UIControlStateNormal];
-        [self addSubview:aButton];
+//        UIButton* aButton = [[UIButton alloc]initWithFrame:CGRectMake(100, 100, 100, 100)];
+//        [aButton setTitle:@"HAHA" forState:UIControlStateNormal];
+//        [self addSubview:aButton];
         
-        drawingTree = [[OELDrawingTree alloc]init];
+        drawingTree = [[OELDrawingTree alloc]initWithDelegate:self];
+        drawAxis = [[OELDrawAxis alloc]init];
+        [[drawingTree children]addObject:[drawAxis drawingTree]];
         
+        channel = [[OELChannel alloc]init];
+        [[drawingTree children]addObject:[channel drawingTree]];
+        
+        //gestures
+        UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
+        UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipe:)];
+        UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(handleLongPress:)];
+
+        
+        [self addGestureRecognizer:pinchGesture];
+        [self addGestureRecognizer:swipeGesture];
+        [self addGestureRecognizer:longPressGesture];
         
     }
 	gl_time = 0;
@@ -87,71 +96,16 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
 }
 
 - (void)compileShaders{
-
-    NSString* vertPath = [[NSBundle mainBundle] pathForResource:@"Vertex"
-                                                         ofType:@"glsl"];
-    NSString* fragPath = [[NSBundle mainBundle] pathForResource:@"Fragment"
-                                                         ofType:@"glsl"];
-    lineProgramHandle = shader_load([vertPath cStringUsingEncoding:NSUTF8StringEncoding],
-                [fragPath cStringUsingEncoding:NSUTF8StringEncoding]);
+    [[OELScreenShader getSharedShader ]compileAndLoadShader:@"Vertex.glsl" Fragment:@"Fragment.glsl"];
+    [[OELTextShader getSharedShader ]compileAndLoadShader:@"v3f-t2f-c4f.vert" Fragment:@"v3f-t2f-c4f.frag"];
     
-
-    vertPath = [[NSBundle mainBundle] pathForResource:@"v3f-t2f-c4f"
-                                                         ofType:@"vert"];
-    fragPath = [[NSBundle mainBundle] pathForResource:@"v3f-t2f-c4f"
-                                                         ofType:@"frag"];
-    textProgramHandle = shader_load( [vertPath cStringUsingEncoding:NSUTF8StringEncoding],
-                                    [fragPath cStringUsingEncoding:NSUTF8StringEncoding]);
+    float aspect = fabsf(self.frame.size.width / self.frame.size.height);
+    [[OELTextShader getSharedShader] setAspect:aspect];
+    [[OELScreenShader getSharedShader] setAspect:aspect];
     
 
 }
--(void) switchProgram:(OELP_PROGRAM) program{
-    switch(program){
-        case LINE_PROGRAM:
-            glUseProgram(lineProgramHandle);
-            
-            positionSlot = glGetAttribLocation(lineProgramHandle, "Position");
-            colorSlot = glGetAttribLocation(lineProgramHandle, "SourceColor");
-            projectionUniform = glGetUniformLocation(lineProgramHandle, "Projection");
-            modelViewUniform = glGetUniformLocation(lineProgramHandle, "Modelview");
-            gl_timeUniform = glGetUniformLocation(lineProgramHandle, "time");
-            
-            glEnableVertexAttribArray(positionSlot);
-            glEnableVertexAttribArray(colorSlot);
-            break;
-    
-        case TEXT_PROGRAM:
-            
-            break;
-    }
-}
-- (void)setupVBOs {
-    
-    
-    int i;
-    for (int j=0; j<OELPD_DATA_CHANNEL; j++) {
-        
-        for (i=0; i<OELPD_DATA_LENGTH; i++) {
-            data[j]->vertices[i].color[0] = 1.0;
-            data[j]->vertices[i].color[1] = 1.0;
-            data[j]->vertices[i].color[2] = 1.0;
-            data[j]->vertices[i].color[3] = 1.0;
-        }
-    }
-    for (i=0; i<OELPD_DATA_CHANNEL; i++) {
-        glGenBuffers(1, vertexBuffer+i);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer[i]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(*data[i]->vertices)*data[i]->length, data[i]->vertices, GL_DYNAMIC_DRAW);
-    }
-}
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
-{
-    // Drawing code
-}
-*/
+
 - (BOOL)createFramebuffer
 {
     glGenFramebuffers(1, &viewFramebuffer);
@@ -231,115 +185,16 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
     [EAGLContext setCurrentContext:context];
     glViewport(0, 0, self.frame.size.width, self.frame.size.height);
     glBindFramebuffer(GL_FRAMEBUFFER, msaaFramebuffer);
-    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glEnable( GL_TEXTURE_2D );
- 
+
+
     [drawingTree drawTree];
-    
-//    //choose program
-//    [self switchProgram:LINE_PROGRAM];
-//    //Init matrix
-//    float aspect = fabsf(self.frame.size.width / self.frame.size.height);
-//
-//    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(60.0f), aspect, 5.0f, 10.0f);
-//    GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -7);
-//    int rotation = 90*gl_time/100;
-//    modelViewMatrix = GLKMatrix4Rotate(modelViewMatrix, GLKMathDegreesToRadians(rotation), GLKMathDegreesToRadians(rotation), GLKMathDegreesToRadians(rotation), 1);
-//    
-//    glUniformMatrix4fv(projectionUniform, 1, 0, projectionMatrix.m);
-//    glUniformMatrix4fv(modelViewUniform, 1, 0, modelViewMatrix.m);
-//    gl_time += 0.02;
-//    glUniform1f(gl_timeUniform, gl_time);
-//    
-//    //draw the 1st line
-//    float f;
-//    for (int i=0; i<OELPD_DATA_LENGTH; i++) {
-//        f = (float)i/(OELPD_DATA_LENGTH)*4-2;
-//        data[0]->vertices[i].point[0] = 2*f;
-//        data[0]->vertices[i].point[1] = sinf(f+gl_time);
-//        data[0]->vertices[i].point[2] = 0.2;
-//        data[0]->vertices[i].color[1] = 0.5*sinf(f+gl_time)+0.5;
-//    }
-//    int i =0;
-//    
-//    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer[i]);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(*data[i]->vertices)*data[i]->length, data[i]->vertices, GL_DYNAMIC_DRAW);
-//    glVertexAttribPointer(positionSlot, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-//    glVertexAttribPointer(colorSlot, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) (sizeof(float) * 3));
-//
-//    
-//    glLineWidth(2.0f);
-//    glEnable(GL_LINE_SMOOTH);
-//    glHint(GL_LINE_SMOOTH, GL_NICEST);
-//    glDrawArrays(GL_LINE_STRIP, 0, (int)data[0]->length);
-//    
-//    //draw the second line
-//     i=0;
-//    data[1]->vertices[i].point[0] = 0.5;
-//    data[1]->vertices[i].point[1] = 0.5;
-//    data[1]->vertices[i].point[2] = 0;
-//    i=1;
-//    data[1]->vertices[i].point[0] = 0.5;
-//    data[1]->vertices[i].point[1] = -0.5;
-//    data[1]->vertices[i].point[2] = 0;
-//    i=2;
-//    data[1]->vertices[i].point[0] = -0.5;
-//    data[1]->vertices[i].point[1] = -0.5;
-//    data[1]->vertices[i].point[2] = 0;
-//    i=3;
-//    data[1]->vertices[i].point[0] = -0.5;
-//    data[1]->vertices[i].point[1] = 0.5;
-//    data[1]->vertices[i].point[2] = 0;
-//    
-//    i =1;
-//    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer[i]);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(*data[i]->vertices)*data[i]->length, data[i]->vertices, GL_DYNAMIC_DRAW);
-//    glVertexAttribPointer(positionSlot, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-//    glVertexAttribPointer(colorSlot, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) (sizeof(float) * 3));
-//
-//    mat4 model, view, projection;
-//    mat4_set_identity( &projection );
-//    mat4_set_identity( &model );
-//    mat4_set_identity( &view );
-//   
-////
-//    projectionMatrix = GLKMatrix4MakeScale(0.1, aspect*0.1, 0.1);
-//    modelViewMatrix = GLKMatrix4Identity;
-//    glUniformMatrix4fv(projectionUniform, 1, 0, projectionMatrix.m);
-//    glUniformMatrix4fv(modelViewUniform, 1, 0, model.data);
-//    
-//    glDrawArrays(GL_LINE_STRIP, 0, (int)data[i]->length);
-//
-//   //    glDrawElements(GL_TRIANGLE_STRIP, text_buffer->vertices->size, GL_UNSIGNED_BYTE, 0);
-//    
-//    [self switchProgram:TEXT_PROGRAM];
-//    
-//    projectionMatrix = GLKMatrix4MakeScale(0.001, aspect*0.001, 0.001);
-//    glUseProgram( textProgramHandle );
-//    {
-//        glUniform1i( glGetUniformLocation( textProgramHandle, "texture" ),
-//                    0 );
-//        glUniformMatrix4fv( glGetUniformLocation( textProgramHandle, "model" ),
-//                           1, 0, model.data);
-//        glUniformMatrix4fv( glGetUniformLocation( textProgramHandle, "view" ),
-//                           1, 0, view.data);
-//        glUniformMatrix4fv( glGetUniformLocation( textProgramHandle, "projection" ),
-//                           1, 0, projectionMatrix.m);
-////        @autoreleasepool {
-////            OELTextUtility *text = [[OELTextUtility alloc]initWithText:@"Hello" orginX:0 originY:0 font:nil color:nil fontSize:nil];
-//            NSString *str = [NSString stringWithFormat:@"ABC %f",gl_time ];
-//            text = [[OELTextUtility alloc]initWithText:str orginX:0 originY:0 font:nil color:[UIColor brownColor] fontSize:0];
-//            vertex_buffer_render( [text textBuffer], GL_TRIANGLES );
-//            str = [NSString stringWithFormat:@"%f XYZ",gl_time ];
-//            text = [[OELTextUtility alloc]initWithText:str orginX:20 originY:20 font:nil color:[UIColor brownColor] fontSize:80];
-//            vertex_buffer_render( [text textBuffer], GL_TRIANGLES );
-////        }
-//    }
 
     
     //MSAA
@@ -389,6 +244,10 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
 //    free(spriteData);        
 //    return texName;    
 //}
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
+}
+
 
 - (void)startAnimation
 {
@@ -400,6 +259,8 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
 
 }
 
+
+
 -(void)oELDraw
 {
     
@@ -407,6 +268,31 @@ float fcolor_array[OELPD_DATA_LENGTH*4];
 -(OELDrawingTree*) getOELDrawingTree
 {
     return drawingTree;
+}
+
+//Handle gestures
+-(void)handlePinch:(UIPinchGestureRecognizer*)sender {
+    
+//    NSLog(@"latscale = %f",mLastScale);
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        lastXDiv = [channel xDiv];
+    }
+    
+    float f = [sender scale];
+    [channel setXDiv:lastXDiv*f ];
+    
+    if (sender.state == UIGestureRecognizerStateEnded)
+    {
+        f=1;
+    }
+    NSLog(@"Scale: %f", f);
+}
+-(void)handleSwipe:(UISwipeGestureRecognizer*)sender {
+    NSLog(@"Direction : %d", [sender direction]);
+}
+
+-(void)handleLongPress:(UILongPressGestureRecognizer*)sender {
+    NSLog(@"Long press");
 }
 
 @end

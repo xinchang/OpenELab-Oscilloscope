@@ -24,12 +24,22 @@
 		4A05D6CB18DE5461001C339E /* v3f-t2f-c4f.vert in Resources */ = {isa = PBXBuildFile; fileRef = 4A05D58818DE001D001C339E /* v3f-t2f-c4f.vert */; };
 		4A442FAE193A35B20072800E /* OELTextUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A442FAD193A35B20072800E /* OELTextUtility.m */; };
 		4A442FB2193A60180072800E /* OELDrawingTree.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A442FB1193A60180072800E /* OELDrawingTree.m */; };
+		4A442FB7193B3E6F0072800E /* OELAxisUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A442FB6193B3E6F0072800E /* OELAxisUtility.m */; };
+		4A442FBB193D06400072800E /* OELDrawAxis.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A442FBA193D06400072800E /* OELDrawAxis.m */; };
+		4A442FBE193D07640072800E /* OELShaderUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A442FBD193D07640072800E /* OELShaderUtility.m */; };
+		4A442FC3194E5CE30072800E /* OELDrawLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A442FC2194E5CE30072800E /* OELDrawLine.m */; };
+		4A442FC6194E67D70072800E /* OELTextShader.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A442FC5194E67D70072800E /* OELTextShader.m */; };
+		4A442FC9194E67F20072800E /* OELScreenShader.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A442FC8194E67F20072800E /* OELScreenShader.m */; };
 		4A6BB53218CA71A100D40FF4 /* OELPlotView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BB53118CA71A100D40FF4 /* OELPlotView.m */; };
 		4A6BB53718CA860200D40FF4 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A6BB53618CA860200D40FF4 /* OpenGLES.framework */; };
 		4A6BB53918CA860F00D40FF4 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A6BB53818CA860F00D40FF4 /* QuartzCore.framework */; };
 		4A6BB55118CC604000D40FF4 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A6BB55018CC604000D40FF4 /* GLKit.framework */; };
 		4A6BB55318CC8F1B00D40FF4 /* Vertex.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 4A6BB55218CC8F1B00D40FF4 /* Vertex.glsl */; };
 		4A6BB55618CC919600D40FF4 /* Fragment.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 4A6BB55518CC919600D40FF4 /* Fragment.glsl */; };
+		4A6ED4031958CF270024BE26 /* OELDrawCurve.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A6ED4021958CF270024BE26 /* OELDrawCurve.m */; };
+		4A6ED4061958DF1A0024BE26 /* OELDrawText.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A6ED4051958DF1A0024BE26 /* OELDrawText.m */; };
+		4A6ED40A195A27A80024BE26 /* OELChannel.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A6ED409195A27A80024BE26 /* OELChannel.m */; };
+		4A6ED40D195B5C9D0024BE26 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A6ED40C195B5C9C0024BE26 /* AVFoundation.framework */; };
 		4AAEBC9D18D6000100E42FDE /* OELPlotData.c in Sources */ = {isa = PBXBuildFile; fileRef = 4AAEBC9C18D6000100E42FDE /* OELPlotData.c */; };
 		4AB7AAFC18C92FC000036040 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AB7AAFB18C92FC000036040 /* Foundation.framework */; };
 		4AB7AAFE18C92FC000036040 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AB7AAFD18C92FC000036040 /* CoreGraphics.framework */; };
@@ -388,6 +398,18 @@
 		4A442FAD193A35B20072800E /* OELTextUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OELTextUtility.m; path = Utilities/OELTextUtility.m; sourceTree = "<group>"; };
 		4A442FB0193A60180072800E /* OELDrawingTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OELDrawingTree.h; path = Plot/OELDrawingTree.h; sourceTree = "<group>"; };
 		4A442FB1193A60180072800E /* OELDrawingTree.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OELDrawingTree.m; path = Plot/OELDrawingTree.m; sourceTree = "<group>"; };
+		4A442FB5193B3E6F0072800E /* OELAxisUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OELAxisUtility.h; path = "OpenELab-Oscilloscope/Utilities/OELAxisUtility.h"; sourceTree = SOURCE_ROOT; };
+		4A442FB6193B3E6F0072800E /* OELAxisUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OELAxisUtility.m; path = "OpenELab-Oscilloscope/Utilities/OELAxisUtility.m"; sourceTree = SOURCE_ROOT; };
+		4A442FB9193D06400072800E /* OELDrawAxis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OELDrawAxis.h; path = Plot/OELDrawAxis.h; sourceTree = "<group>"; };
+		4A442FBA193D06400072800E /* OELDrawAxis.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OELDrawAxis.m; path = Plot/OELDrawAxis.m; sourceTree = "<group>"; };
+		4A442FBC193D07640072800E /* OELShaderUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OELShaderUtility.h; path = Utilities/OELShaderUtility.h; sourceTree = "<group>"; };
+		4A442FBD193D07640072800E /* OELShaderUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OELShaderUtility.m; path = Utilities/OELShaderUtility.m; sourceTree = "<group>"; };
+		4A442FC1194E5CE30072800E /* OELDrawLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OELDrawLine.h; path = Plot/OELDrawLine.h; sourceTree = "<group>"; };
+		4A442FC2194E5CE30072800E /* OELDrawLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OELDrawLine.m; path = Plot/OELDrawLine.m; sourceTree = "<group>"; };
+		4A442FC4194E67D70072800E /* OELTextShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OELTextShader.h; path = Utilities/OELTextShader.h; sourceTree = "<group>"; };
+		4A442FC5194E67D70072800E /* OELTextShader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OELTextShader.m; path = Utilities/OELTextShader.m; sourceTree = "<group>"; };
+		4A442FC7194E67F20072800E /* OELScreenShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OELScreenShader.h; path = Utilities/OELScreenShader.h; sourceTree = "<group>"; };
+		4A442FC8194E67F20072800E /* OELScreenShader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OELScreenShader.m; path = Utilities/OELScreenShader.m; sourceTree = "<group>"; };
 		4A6BB53018CA71A100D40FF4 /* OELPlotView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OELPlotView.h; path = Plot/OELPlotView.h; sourceTree = "<group>"; };
 		4A6BB53118CA71A100D40FF4 /* OELPlotView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OELPlotView.m; path = Plot/OELPlotView.m; sourceTree = "<group>"; };
 		4A6BB53618CA860200D40FF4 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -395,6 +417,13 @@
 		4A6BB55018CC604000D40FF4 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		4A6BB55218CC8F1B00D40FF4 /* Vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Vertex.glsl; path = GlFiles/Vertex.glsl; sourceTree = "<group>"; };
 		4A6BB55518CC919600D40FF4 /* Fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Fragment.glsl; path = GlFiles/Fragment.glsl; sourceTree = "<group>"; };
+		4A6ED4011958CF270024BE26 /* OELDrawCurve.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OELDrawCurve.h; path = Plot/OELDrawCurve.h; sourceTree = "<group>"; };
+		4A6ED4021958CF270024BE26 /* OELDrawCurve.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OELDrawCurve.m; path = Plot/OELDrawCurve.m; sourceTree = "<group>"; };
+		4A6ED4041958DF1A0024BE26 /* OELDrawText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OELDrawText.h; path = Plot/OELDrawText.h; sourceTree = "<group>"; };
+		4A6ED4051958DF1A0024BE26 /* OELDrawText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OELDrawText.m; path = Plot/OELDrawText.m; sourceTree = "<group>"; };
+		4A6ED408195A27A80024BE26 /* OELChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OELChannel.h; path = Plot/OELChannel.h; sourceTree = "<group>"; };
+		4A6ED409195A27A80024BE26 /* OELChannel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OELChannel.m; path = Plot/OELChannel.m; sourceTree = "<group>"; };
+		4A6ED40C195B5C9C0024BE26 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		4AAEBC9B18D5FFE300E42FDE /* OELPlotData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OELPlotData.h; path = Plot/OELPlotData.h; sourceTree = "<group>"; };
 		4AAEBC9C18D6000100E42FDE /* OELPlotData.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = OELPlotData.c; path = Plot/OELPlotData.c; sourceTree = "<group>"; };
 		4AB7AAF818C92FC000036040 /* OpenELab-Oscilloscope.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenELab-Oscilloscope.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -424,6 +453,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4A6ED40D195B5C9D0024BE26 /* AVFoundation.framework in Frameworks */,
 				4A05D6C218DE5102001C339E /* libFreetype2.a in Frameworks */,
 				4A6BB55118CC604000D40FF4 /* GLKit.framework in Frameworks */,
 				4A6BB53918CA860F00D40FF4 /* QuartzCore.framework in Frameworks */,
@@ -943,10 +973,28 @@
 				4AAEBC9C18D6000100E42FDE /* OELPlotData.c */,
 				4A442FB0193A60180072800E /* OELDrawingTree.h */,
 				4A442FB1193A60180072800E /* OELDrawingTree.m */,
+				4A442FB9193D06400072800E /* OELDrawAxis.h */,
+				4A442FBA193D06400072800E /* OELDrawAxis.m */,
+				4A442FC1194E5CE30072800E /* OELDrawLine.h */,
+				4A442FC2194E5CE30072800E /* OELDrawLine.m */,
+				4A6ED4011958CF270024BE26 /* OELDrawCurve.h */,
+				4A6ED4021958CF270024BE26 /* OELDrawCurve.m */,
+				4A6ED4041958DF1A0024BE26 /* OELDrawText.h */,
+				4A6ED4051958DF1A0024BE26 /* OELDrawText.m */,
+				4A442FBC193D07640072800E /* OELShaderUtility.h */,
+				4A442FBD193D07640072800E /* OELShaderUtility.m */,
+				4A442FC4194E67D70072800E /* OELTextShader.h */,
+				4A442FC5194E67D70072800E /* OELTextShader.m */,
+				4A442FC7194E67F20072800E /* OELScreenShader.h */,
+				4A442FC8194E67F20072800E /* OELScreenShader.m */,
 				4A6BB53018CA71A100D40FF4 /* OELPlotView.h */,
 				4A6BB53118CA71A100D40FF4 /* OELPlotView.m */,
 				4A442FAC193A35B20072800E /* OELTextUtility.h */,
 				4A442FAD193A35B20072800E /* OELTextUtility.m */,
+				4A6ED408195A27A80024BE26 /* OELChannel.h */,
+				4A6ED409195A27A80024BE26 /* OELChannel.m */,
+				4A442FB5193B3E6F0072800E /* OELAxisUtility.h */,
+				4A442FB6193B3E6F0072800E /* OELAxisUtility.m */,
 			);
 			name = Plot;
 			sourceTree = "<group>";
@@ -982,6 +1030,7 @@
 		4AB7AAFA18C92FC000036040 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4A6ED40C195B5C9C0024BE26 /* AVFoundation.framework */,
 				4A6BB55018CC604000D40FF4 /* GLKit.framework */,
 				4A6BB53818CA860F00D40FF4 /* QuartzCore.framework */,
 				4A6BB53618CA860200D40FF4 /* OpenGLES.framework */,
@@ -1160,23 +1209,32 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4A6ED40A195A27A80024BE26 /* OELChannel.m in Sources */,
 				4A05D6C318DE531E001C339E /* shader.c in Sources */,
 				4A442FAE193A35B20072800E /* OELTextUtility.m in Sources */,
 				4A05D59F18DE0042001C339E /* vertex-attribute.c in Sources */,
 				4AB7AB0818C92FC000036040 /* main.m in Sources */,
 				4A05D59E18DE0042001C339E /* vector.c in Sources */,
+				4A442FC6194E67D70072800E /* OELTextShader.m in Sources */,
 				4A05D59618DE0042001C339E /* edtaa3func.c in Sources */,
+				4A442FB7193B3E6F0072800E /* OELAxisUtility.m in Sources */,
 				4A05D5A018DE0042001C339E /* vertex-buffer.c in Sources */,
+				4A442FBE193D07640072800E /* OELShaderUtility.m in Sources */,
 				4AAEBC9D18D6000100E42FDE /* OELPlotData.c in Sources */,
+				4A6ED4061958DF1A0024BE26 /* OELDrawText.m in Sources */,
+				4A442FC9194E67F20072800E /* OELScreenShader.m in Sources */,
 				4AB7AB1518C92FC000036040 /* OELViewController.m in Sources */,
 				4A6BB53218CA71A100D40FF4 /* OELPlotView.m in Sources */,
 				4A05D59A18DE0042001C339E /* platform.c in Sources */,
 				4A05D59718DE0042001C339E /* font-manager.c in Sources */,
 				4A442FB2193A60180072800E /* OELDrawingTree.m in Sources */,
 				4AB7AB0C18C92FC000036040 /* OELAppDelegate.m in Sources */,
+				4A6ED4031958CF270024BE26 /* OELDrawCurve.m in Sources */,
+				4A442FBB193D06400072800E /* OELDrawAxis.m in Sources */,
 				4A05D5A318DE06B2001C339E /* texture-font.c in Sources */,
 				4A05D59B18DE0042001C339E /* text-buffer.c in Sources */,
 				4A05D59918DE0042001C339E /* mat4.c in Sources */,
+				4A442FC3194E5CE30072800E /* OELDrawLine.m in Sources */,
 				4A05D59C18DE0042001C339E /* texture-atlas.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

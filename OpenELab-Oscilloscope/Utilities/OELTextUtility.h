@@ -12,7 +12,6 @@
 #import "mat4.h"
 #import "shader.h"
 
-#import "OELDraw.h"
 
 @interface OELTextUtility : NSObject
 {
@@ -27,9 +26,15 @@
 
 }
 @property(nonatomic,readonly)    vertex_buffer_t * textBuffer;
+
 +(void) addText:(vertex_buffer_t *) buffer font:( texture_font_t * )font text:(wchar_t *)  text color:(vec4 * )color pen:(vec2 *) pen;
++(void) updateText:(vertex_buffer_t *) buffer font:( texture_font_t * )font text:(wchar_t *)  text color:(vec4 * )color pen:(vec2) pen;
 
 -(id) initWithText:(NSString*) t orginX:(float) x originY:(float) y font:(NSString *) fontName color:(UIColor *)c fontSize:(int) size ;
 -(void) dealloc;
+
+-(void) setColor:(UIColor*)c;-(void)setFontSize:(int)s;
+-(void)setOriginX:(int)x Y:(int)y;
+-(void)generateTextBuffer;
 
 @end

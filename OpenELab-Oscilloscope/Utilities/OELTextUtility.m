@@ -57,6 +57,40 @@ typedef struct {
         }
     }
 }
++(void) updateText:(vertex_buffer_t *) buffer font:( texture_font_t * )font text:(wchar_t *)  text color:(vec4 * )color pen:(vec2) pen
+{
+    size_t i;
+    float r = color->red, g = color->green, b = color->blue, a = color->alpha;
+    for( i=0; i<wcslen(text); ++i )
+    {
+        texture_glyph_t *glyph = texture_font_get_glyph( font, text[i] );
+        if( glyph != NULL )
+        {
+            int kerning = 0;
+            if( i > 0)
+            {
+                kerning = texture_glyph_get_kerning( glyph, text[i-1] );
+            }
+            pen.x += kerning;
+            int x0  = (int)( pen.x + glyph->offset_x );
+            int y0  = (int)( pen.y + glyph->offset_y );
+            int x1  = (int)( x0 + glyph->width );
+            int y1  = (int)( y0 - glyph->height );
+            float s0 = glyph->s0;
+            float t0 = glyph->t0;
+            float s1 = glyph->s1;
+            float t1 = glyph->t1;
+            GLuint indices[] = {0,1,2,0,2,3};
+            vertex_t vertices[] = { { x0,y0,0,  s0,t0,  r,g,b,a },
+                { x0,y1,0,  s0,t1,  r,g,b,a },
+                { x1,y1,0,  s1,t1,  r,g,b,a },
+                { x1,y0,0,  s1,t0,  r,g,b,a } };
+            vertex_buffer_push_back( buffer, vertices, 4, indices, 6 );
+            pen.x += glyph->advance_x;
+        }
+    }
+}
+
 
 -(id) initWithText:(NSString*) t orginX:(float) x originY:(float) y font:(NSString *) fontName color:(UIColor *)c fontSize:(int) size
 {
@@ -67,27 +101,11 @@ typedef struct {
         else
             fontPath = [[NSBundle mainBundle] pathForResource:@"Vera" ofType:@"ttf"];
         
-        if (c) {
-            const CGFloat* colorRef = CGColorGetComponents( c.CGColor );
-            color.r = colorRef[0];
-            color.g = colorRef[1];
-            color.b = colorRef[2];
-            color.a = colorRef[3];
-        }
-        else
-        {
-            color.r = 1;
-            color.g = 0;
-            color.b = 0;
-            color.a = 1;
-   
-        }
-        if (size) {
-            fontSize = size;
-        }
-        else
-            fontSize = 50;
+        [self setColor:c];
+        [self setFontSize:size];
+        
         textBuffer  = vertex_buffer_new( "vertex:3f,tex_coord:2f,color:4f" );
+        
         origin.x = x;
         origin.y = y;
         atlas = texture_atlas_new( 512, 512, 1);
@@ -105,9 +123,38 @@ typedef struct {
     
 }
 
--(void)generateTextBuffer
-{
-    [OELTextUtility addText:textBuffer font:font text:(wchar_t*)[text cStringUsingEncoding:NSUTF32StringEncoding] color:&color pen:&origin];
+-(void)generateTextBuffer{
+    
+    vertex_buffer_clear(textBuffer);
+    vec2 temp = origin;
+    [OELTextUtility addText:textBuffer font:font text:(wchar_t*)[text cStringUsingEncoding:NSUTF32StringEncoding] color:&color pen:&temp];
 }
-
+-(void) setColor:(UIColor*)c{
+    if (c) {
+        const CGFloat* colorRef = CGColorGetComponents( c.CGColor );
+        color.r = colorRef[0];
+        color.g = colorRef[1];
+        color.b = colorRef[2];
+        color.a = colorRef[3];
+    }
+    else
+    {
+        color.r = 1;
+        color.g = 0;
+        color.b = 0;
+        color.a = 1;
+        
+    }
+}
+-(void)setFontSize:(int)s{
+    if (s) {
+        fontSize = s;
+    }
+    else
+        fontSize = 50;
+}
+-(void)setOriginX:(int)x Y:(int)y{
+    origin.x=x;
+    origin.y=y;
+}
 @end

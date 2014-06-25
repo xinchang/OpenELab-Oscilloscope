@@ -13,17 +13,19 @@
 
 @protocol OELDrawingTreeDelegate <NSObject>
     -(void)oELDraw;
-    -(OELDrawingTree*) getOELDrawingTree;
+//    -(OELDrawingTree*) getOELDrawingTree;
 @end
 
 @interface OELDrawingTree : NSObject
 {
     id<OELDrawingTreeDelegate> owner;
+    BOOL visible;
     NSMutableArray *children;
 }
 @property(nonatomic,readwrite) id<OELDrawingTreeDelegate> owner;
 @property(nonatomic,readwrite) NSMutableArray *children;
--(id)init;
+@property(nonatomic,readwrite) BOOL visible;
+-(id)initWithDelegate: (id<OELDrawingTreeDelegate>)delegate;
 -(void)drawTree;
 
 
